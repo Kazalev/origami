@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react'
+import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import Publications from './pages/publications'
 import ShareThoughtsPage from './pages/share-thoughts'
