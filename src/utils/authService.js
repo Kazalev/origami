@@ -16,7 +16,10 @@ const authenticate = async (url, body, onSuccess, onFailure) => {
         console.log(response);
 
         if (response.username && authToken) {
-            onSuccess()
+            onSuccess({
+                username: response.username,
+                id: response._id
+            })
         } else {
             onFailure()
         }
