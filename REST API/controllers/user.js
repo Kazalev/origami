@@ -24,6 +24,10 @@ module.exports = {
                 })
         },
 
+        verifyLogin: (req, res, next) => {
+            
+        },
+
         login: (req, res, next) => {
             const { username, password } = req.body;
             models.User.findOne({ username })

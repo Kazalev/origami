@@ -19,7 +19,7 @@ class App extends Component {
     }
 
     logOut = () => {
-        // document.cookie delete
+        document.cookie  = 'x-auth-token='
         this.setState({
             isLoggedIn: false,
             user: null
@@ -28,7 +28,7 @@ class App extends Component {
 
     render () {
         const { isLoggedIn, user } = this.state
-        
+
         return (
             <UserContext.Provider value={{
                 isLoggedIn,
