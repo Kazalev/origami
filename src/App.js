@@ -1,45 +1,28 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import UserContext from './Context'
 
-class App extends Component {
-    constructor(props) {
-        super(props)
+const App = (props) => {
+    const [user, setUser] = useState(null)
 
-        this.state = {
-            isLoggedIn: false,
-            user: null
-        }
+    const logIn = (user) => {
+        setUser({...user, isLoggedIn: true})
     }
 
-    logIn = (user) => {
-        this.setState({
-            isLoggedIn: true,
-            user
-        })
+    const logOut = () => {
+        document.cookie = 'x-auth-token='
+        setUser({isLoggedIn: false})
     }
 
-    logOut = () => {
-        document.cookie  = 'x-auth-token='
-        this.setState({
-            isLoggedIn: false,
-            user: null
-        })
-    }
-
-    render () {
-        const { isLoggedIn, user } = this.state
-
-        return (
-            <UserContext.Provider value={{
-                isLoggedIn,
-                user,
-                logIn: this.logIn,
-                logOut: this.logOut
-            }}>
-                {this.props.children}
-            </UserContext.Provider>
-        )
-    }
+    return (
+        <UserContext.Provider value={{
+            isLoggedIn,
+            user,
+            logIn,
+            logOut
+        }}>
+            {props.children}
+        </UserContext.Provider>
+    )
 }
 
 export default App
