@@ -1,78 +1,37 @@
-import React, { useState, Component } from 'react'
+import React, { useState, useEffect } from 'react'
 import UserContext from './Context'
-import { render } from '@testing-library/react'
 
 function getCookie(name) {
     const cookieValue = document.cookie.match('(^|;) ?' + name + '=([^]*)(;|$)')
     return cookieValue ? cookieValue[2] : null
 }
 
-// const App = (props) => {
-//     const [user, setUser] = useState(null)
-//     const [isLoggedIn, setIsLoggedIn] = useState(false)
+const App = (props) => {
+    const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(true)
 
-//     const logIn = (user) => {
-//         setUser({...user, isLoggedIn: true})
-//     }
-
-//     const logOut = () => {
-//         document.cookie = 'x-auth-token='
-//         setUser({isLoggedIn: false})
-//     }
-
-//     return (
-//         <UserContext.Provider value={{
-//             isLoggedIn,
-//             user,
-//             logIn,
-//             logOut
-//         }}>
-//             {props.children}
-//         </UserContext.Provider>
-//     )
-// }
-
-
-class App extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            isLoggedIn: null,
-            user: null
-        }
+    const logIn = (user) => {
+        setUser({ ...user, isLoggedIn: true })
     }
 
-    logIn = (user) => {
-        this.setState({
-            isLoggedIn: true,
-            user
-        })
-    }
-
-    logOut = () => {
+    const logOut = () => {
         document.cookie = 'x-auth-token= ; expires = Thu, 01 Jan 1970 00:00:00 GMT'
-        this.setState({
-            isLoggedIn: false,
-            user: null
-        })
+        setUser({ isLoggedIn: false })
     }
 
-    componentDidMount() {
+    useEffect(() => {
         const token = getCookie('x-auth-token')
 
         if (!token) {
-            this.logOut()
+            logOut()
             return
         }
 
         fetch('http://localhost:9999/api/user/verify', {
-            method: "POST",
-            body: JSON.stringify({
-                token
-            }),
+            method: "GET",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                'Authorization': token
             }
         }).then(promise => {
             console.log(promise)
@@ -80,36 +39,32 @@ class App extends Component {
 
         }).then(response => {
             if (response.status) {
-                this.logIn({
+                logIn({
                     username: response.user.username,
                     id: response.user._id
                 })
             } else {
-                this.logOut()
+                logOut()
             }
+            setLoading(false)
         })
-    }
+    }, [])
 
-    render() {
-        const { isLoggedIn, user } = this.state
-
-        if (isLoggedIn === null) {
-            return (
-                <div>Loading....</div>
-            )
-        }
-
+    if (loading) {
         return (
-            <UserContext.Provider value={{
-                isLoggedIn,
-                user,
-                logIn: this.logIn,
-                logOut: this.logOut
-            }}>
-                {this.props.children}
-            </UserContext.Provider>
+            <div>Loading...</div>
         )
     }
+
+    return (
+        <UserContext.Provider value={{
+            user,
+            logIn,
+            logOut
+        }}>
+            {props.children}
+        </UserContext.Provider>
+    )
 }
 
 export default App

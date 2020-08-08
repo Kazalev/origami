@@ -25,7 +25,7 @@ module.exports = {
         },
 
         verifyLogin: (req, res, next) => {
-            const token = req.body.token || '';
+            const token = req.headers.authorization || '';
 
             Promise.all([
                 utils.jwt.verifyToken(token),
@@ -43,8 +43,6 @@ module.exports = {
                         });
                 })
                 .catch(err => {
-                    if (!redirectAuthenticated) { next(); return; }
-
                     if (['token expired', 'blacklisted token', 'jwt must be provided'].includes(err.message)) {
                         res.status(401).send('UNAUTHORIZED!');
                         return;
