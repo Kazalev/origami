@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import UserContext from './Context'
-
-function getCookie(name) {
-    const cookieValue = document.cookie.match('(^|;) ?' + name + '=([^]*)(;|$)')
-    return cookieValue ? cookieValue[2] : null
-}
+import getCookie from './utils/cookie'
 
 const App = (props) => {
     const [user, setUser] = useState(null)
@@ -24,6 +20,7 @@ const App = (props) => {
 
         if (!token) {
             logOut()
+            setLoading(false)
             return
         }
 
@@ -34,9 +31,7 @@ const App = (props) => {
                 'Authorization': token
             }
         }).then(promise => {
-            console.log(promise)
             return promise.json()
-
         }).then(response => {
             if (response.status) {
                 logIn({
